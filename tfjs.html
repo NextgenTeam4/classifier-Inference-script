@@ -1,0 +1,73 @@
+<html>
+<head>
+  <title>model running</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"> </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+
+  
+
+</head>
+
+<body>
+    <img id="img" src="/down1.jpeg" >
+    <button onclick= "uploadfile();">run</button>
+    <h1>The result is:  <span id="myText"></span></h1>
+
+    <script>  
+
+    var t0=performance.now()
+    async  function uploadfile()
+      {
+        var t0=performance.now() 
+        var image=document.getElementById("img");
+        let tensor = tf.browser.fromPixels(image)
+        .resizeNearestNeighbor([224, 224])
+        .toFloat().div(tf.scalar(255.0)).expandDims();
+   
+       var model;
+        
+    
+        if (!model) {
+            
+            model =await createModel();
+            
+            var result= model.predict([tensor]);
+            console.log(result)
+
+            var res
+            result.data().then(data =>{
+               res=data[0];
+               
+               console.log(res)
+                if(res>=0.5){
+                  document.getElementById("myText").innerHTML = "thumbs up";
+                
+                 console.log("thumbs up")
+                }else{
+                  document.getElementById("myText").innerHTML = "thumbs down";
+                  console.log("thumbs down ")
+                }
+                var t1=performance.now()
+                console.log("the time took to predict is :"+(t1-t0)+"milliseconds");
+
+              });           
+            
+            
+
+        }
+        async function createModel() {
+       
+        const model = await tf.loadLayersModel('tfjsnew/model.json');
+    
+        return model;
+        } 
+
+    };
+
+    </script>
+  
+  
+</body>
+</html>
